@@ -6,19 +6,18 @@ import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 
-/**
- * Interface service.
- */
+/** Interface service. */
 public interface RoomService {
 
-  void addRoom(RoomIncludeRequest request);
+  RoomResponse addRoom(RoomIncludeRequest request);
+
+  RoomResponse getRoom(Long id);
 
   PagedModel<RoomResponse> listRooms(Pageable pagination);
 
-  void updateRoom(RoomUpdateRequest request);
+  RoomResponse updateRoom(RoomUpdateRequest request);
 
   void removeRoom(Long id);
 
   void roomExistsOrThrowException(Long id);
-
 }

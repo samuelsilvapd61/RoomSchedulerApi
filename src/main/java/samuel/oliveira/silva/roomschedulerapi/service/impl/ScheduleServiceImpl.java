@@ -1,6 +1,5 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
-
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -17,51 +16,42 @@ import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 import samuel.oliveira.silva.roomschedulerapi.service.ScheduleService;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 
-/**
- * Business and logical actions of schedule.
- */
+/** Business and logical actions of schedule. */
 @Service
 public class ScheduleServiceImpl implements ScheduleService, EntityActionExecutor {
 
-  @Autowired
-  ScheduleRepository scheduleRepository;
+  @Autowired ScheduleRepository scheduleRepository;
 
-  @Autowired
-  UserService userService;
+  @Autowired UserService userService;
 
-  @Autowired
-  RoomService roomService;
+  @Autowired RoomService roomService;
 
   @Override
-  public void addSchedule(ScheduleIncludeRequest request) {
-    Long userId = request.userId();
-    Long roomId = request.roomId();
+  public ScheduleResponse addSchedule(ScheduleIncludeRequest request) {
+    var userId = request.userId();
+    var roomId = request.roomId();
     var scheduleDate = LocalDate.parse(request.scheduleDate());
     userService.userExistsOrThrowException(userId);
     roomService.roomExistsOrThrowException(roomId);
 
     if (scheduleDateIsNotAtLeastToday(scheduleDate)) {
       throw new RuntimeException(
-          "You must make a schedule for a day that is today or a day in the future.");
+          "You must schedule for a day that is today or a day in the future.");
     }
     if (scheduleAlreadyExists(roomId, scheduleDate)) {
       throw new RuntimeException("This schedule already exists.");
     }
 
     var newSchedule = new Schedule(request);
-    scheduleRepository.save(newSchedule);
-
+    return new ScheduleResponse(scheduleRepository.save(newSchedule));
   }
 
   @Override
   public PagedModel<ScheduleResponse> listNextSchedules(Long id, Pageable pagination) {
     return new PagedModel<ScheduleResponse>(
-        scheduleRepository.findNextSchedulesByUserId(
-            id,
-            LocalDate.now(),
-            pagination
-        ).map(ScheduleResponse::new)
-    );
+        scheduleRepository
+            .findNextSchedulesByUserId(id, LocalDate.now(), pagination)
+            .map(ScheduleResponse::new));
   }
 
   @Override
@@ -70,18 +60,17 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
     executeActionIfEntityExists(
         scheduleId,
         scheduleRepository,
-        schedule -> scheduleRepository.deleteById(scheduleId),
-        "This user does not exist."
-    );
+        schedule -> {
+          scheduleRepository.deleteById(scheduleId);
+          return null;
+        },
+        "This schedule does not exist.");
   }
 
   private boolean scheduleAlreadyExists(Long roomId, LocalDate scheduleDate) {
-    var existingSchedule = scheduleRepository.findById(
-        ScheduleId.builder()
-            .room(roomId)
-            .scheduleDate(scheduleDate)
-            .build()
-    );
+    var existingSchedule =
+        scheduleRepository.findById(
+            ScheduleId.builder().room(roomId).scheduleDate(scheduleDate).build());
     return existingSchedule.isPresent();
   }
 

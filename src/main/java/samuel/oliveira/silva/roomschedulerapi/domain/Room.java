@@ -8,6 +8,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,13 +45,13 @@ public class Room {
 
   @PrePersist
   public void prePersist() {
-    this.inclusionDate = LocalDateTime.now();
-    this.lastUpdateDate = LocalDateTime.now();
+    this.inclusionDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    this.lastUpdateDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
   }
 
   @PreUpdate
   public void preUpdate() {
-    this.lastUpdateDate = LocalDateTime.now();
+    this.lastUpdateDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
   }
 
 }

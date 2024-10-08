@@ -13,20 +13,25 @@ import samuel.oliveira.silva.roomschedulerapi.repository.RoomRepository;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 
-/**
- * Business and logical actions of room.
- */
+/** Business and logical actions of room. */
 @Service
 public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
-  @Autowired
-  RoomRepository repository;
+  @Autowired RoomRepository repository;
 
   @Override
   @Transactional
-  public void addRoom(RoomIncludeRequest request) {
-    var newRoom = new Room(request);
-    repository.save(newRoom);
+  public RoomResponse addRoom(RoomIncludeRequest request) {
+    var room = new Room(request);
+    var newRoom = repository.save(room);
+    return new RoomResponse(newRoom);
+  }
+
+  @Override
+  public RoomResponse getRoom(Long id) {
+    return repository.findById(id)
+        .map(RoomResponse::new)
+        .orElseThrow(() -> new RuntimeException("This room does not exist."));
   }
 
   @Override
@@ -35,14 +40,16 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   }
 
   @Override
-  @Transactional
-  public void updateRoom(RoomUpdateRequest request) {
-    executeActionIfEntityExists(
+  public RoomResponse updateRoom(RoomUpdateRequest request) {
+    var newRoom = executeActionIfEntityExists(
         request.id(),
         repository,
-        room -> room.updateRoom(request),
-        "This room does not exist."
-    );
+        room -> {
+          room.updateRoom(request);
+          return repository.save(room);
+        },
+        "This room does not exist.");
+    return new RoomResponse(newRoom);
   }
 
   @Override
@@ -51,9 +58,11 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
     executeActionIfEntityExists(
         id,
         repository,
-        room -> repository.deleteById(room.getId()),
-        "This room does not exist."
-    );
+        room -> {
+          repository.deleteById(room.getId());
+          return null;
+        },
+        "This room does not exist.");
   }
 
   /**
@@ -62,12 +71,6 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
    * @param id id of room
    */
   public void roomExistsOrThrowException(Long id) {
-    executeActionIfEntityExists(
-        id,
-        repository,
-        room -> {},
-        "This room does not exist."
-    );
+    executeActionIfEntityExists(id, repository, room -> null, "This room does not exist.");
   }
-
 }

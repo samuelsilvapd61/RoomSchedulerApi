@@ -9,6 +9,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;
@@ -49,7 +50,7 @@ public class Schedule {
 
   @PrePersist
   public void prePersist() {
-    this.inclusionDate = LocalDateTime.now();
+    this.inclusionDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
   }
 }
 

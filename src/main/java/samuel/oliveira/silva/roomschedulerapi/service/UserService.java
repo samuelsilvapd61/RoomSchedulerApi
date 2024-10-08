@@ -6,19 +6,18 @@ import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
 
-/**
- * Interface service.
- */
+/** Interface service. */
 public interface UserService {
 
-  void addUser(UserIncludeRequest request);
+  UserResponse addUser(UserIncludeRequest request);
+
+  UserResponse getUser(Long id);
 
   PagedModel<UserResponse> listUsers(Pageable pagination);
 
-  void updateUser(UserUpdateRequest request);
+  UserResponse updateUser(UserUpdateRequest request);
 
   void removeUser(Long id);
 
   void userExistsOrThrowException(Long id);
-
 }

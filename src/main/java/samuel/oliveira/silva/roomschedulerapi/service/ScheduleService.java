@@ -11,7 +11,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
  */
 public interface ScheduleService {
 
-  void addSchedule(ScheduleIncludeRequest request);
+  ScheduleResponse addSchedule(ScheduleIncludeRequest request);
 
   PagedModel<ScheduleResponse> listNextSchedules(Long id, Pageable pagination);
 
