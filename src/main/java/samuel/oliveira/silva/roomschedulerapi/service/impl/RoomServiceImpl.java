@@ -6,6 +6,8 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.Room;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
@@ -29,9 +31,10 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
   @Override
   public RoomResponse getRoom(Long id) {
-    return repository.findById(id)
+    return repository
+        .findById(id)
         .map(RoomResponse::new)
-        .orElseThrow(() -> new RuntimeException("This room does not exist."));
+        .orElseThrow(() -> new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
   }
 
   @Override
@@ -41,14 +44,15 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
   @Override
   public RoomResponse updateRoom(RoomUpdateRequest request) {
-    var newRoom = executeActionIfEntityExists(
-        request.id(),
-        repository,
-        room -> {
-          room.updateRoom(request);
-          return repository.save(room);
-        },
-        "This room does not exist.");
+    var newRoom =
+        executeActionIfEntityExists(
+            request.id(),
+            repository,
+            room -> {
+              room.updateRoom(request);
+              return repository.save(room);
+            },
+            new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
     return new RoomResponse(newRoom);
   }
 
@@ -62,7 +66,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
           repository.deleteById(room.getId());
           return null;
         },
-        "This room does not exist.");
+        new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
   }
 
   /**
@@ -71,6 +75,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
    * @param id id of room
    */
   public void roomExistsOrThrowException(Long id) {
-    executeActionIfEntityExists(id, repository, room -> null, "This room does not exist.");
+    executeActionIfEntityExists(
+        id, repository, room -> null, new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
   }
 }

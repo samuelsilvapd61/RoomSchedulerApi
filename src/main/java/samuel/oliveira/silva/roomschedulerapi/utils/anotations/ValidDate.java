@@ -18,7 +18,7 @@ public @interface ValidDate {
    *
    * @return message
    */
-  String message() default "Invalid date format. Expected format is yyyy-MM-dd";
+  String message() default "Date must be in the format yyyy-MM-dd";
 
   /**
    * Groups.

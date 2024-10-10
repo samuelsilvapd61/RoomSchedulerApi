@@ -59,7 +59,7 @@ public class ScheduleController {
   }
 
   @DeleteMapping
-  public ResponseEntity<Void> removeSchedule(@RequestBody ScheduleRemoveRequest request) {
+  public ResponseEntity<Void> removeSchedule(@Valid @RequestBody ScheduleRemoveRequest request) {
     service.removeSchedule(request);
     return ResponseEntity.noContent().build();
   }

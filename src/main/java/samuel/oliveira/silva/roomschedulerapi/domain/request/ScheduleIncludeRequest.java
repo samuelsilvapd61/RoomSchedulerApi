@@ -1,11 +1,10 @@
 package samuel.oliveira.silva.roomschedulerapi.domain.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import samuel.oliveira.silva.roomschedulerapi.utils.anotations.ValidDate;
 
-/**
- * Body to add a schedule.
- */
+/** Body to add a schedule. */
 public record ScheduleIncludeRequest(
     @NotNull
     Long userId,
@@ -13,9 +12,7 @@ public record ScheduleIncludeRequest(
     @NotNull
     Long roomId,
 
-    @NotNull
-    @ValidDate(message = "Date must be in the format yyyy-MM-dd and valid.")
+    @NotBlank
+    @ValidDate
     String scheduleDate
-
-) {
-}
+) {}

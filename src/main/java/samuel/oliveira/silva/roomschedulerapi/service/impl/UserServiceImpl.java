@@ -6,6 +6,8 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
@@ -24,8 +26,11 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
   public UserResponse addUser(UserIncludeRequest request) {
     var document = request.document();
     var email = request.email();
-    if (documentAlreadyExists(document) || emailAlreadyExists(email)) {
-      throw new RuntimeException("This user already exists.");
+    if (documentAlreadyExists(document)) {
+      throw new ApiException(ApiErrorEnum.DOCUMENT_EXISTS);
+    }
+    if (emailAlreadyExists(email)) {
+      throw new ApiException(ApiErrorEnum.EMAIL_EXISTS);
     }
 
     var user = new User(request);
@@ -35,9 +40,10 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
 
   @Override
   public UserResponse getUser(Long id) {
-    return repository.findById(id)
+    return repository
+        .findById(id)
         .map(UserResponse::new)
-        .orElseThrow(() -> new RuntimeException("This user does not exist."));
+        .orElseThrow(() -> new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
   }
 
   @Override
@@ -55,7 +61,7 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
               user.updateUser(request);
               return repository.save(user);
             },
-            "This user does not exist.");
+            new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
     return new UserResponse(newUser);
   }
 
@@ -69,16 +75,13 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
           repository.deleteById(user.getId());
           return null;
         },
-        "This user does not exist.");
+        new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
   }
 
   @Override
   public void userExistsOrThrowException(Long id) {
     executeActionIfEntityExists(
-        id,
-        repository,
-        user -> null,
-        "This user does not exist.");
+        id, repository, user -> null, new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
   }
 
   private boolean documentAlreadyExists(String document) {

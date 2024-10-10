@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.domain.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;
 
@@ -17,14 +17,14 @@ public record UserIncludeRequest(
     @NotNull
     UserRole role,
 
-    @NotEmpty
+    @NotBlank
     String document,
 
-    @NotEmpty
     @Email
+    @NotBlank
     String email,
 
-    @NotEmpty
+    @NotBlank
     String name
 ) {
 }

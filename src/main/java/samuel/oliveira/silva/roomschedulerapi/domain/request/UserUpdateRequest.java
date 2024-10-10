@@ -1,6 +1,6 @@
 package samuel.oliveira.silva.roomschedulerapi.domain.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;
 
@@ -18,7 +18,7 @@ public record UserUpdateRequest(
     @NotNull
     UserRole role,
 
-    @NotEmpty
+    @NotBlank
     String name
 ) {
 }

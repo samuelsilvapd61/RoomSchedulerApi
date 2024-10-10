@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.Schedule;
 import samuel.oliveira.silva.roomschedulerapi.domain.ScheduleId;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
+import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleRemoveRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
@@ -27,6 +30,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   @Autowired RoomService roomService;
 
   @Override
+  @Transactional
   public ScheduleResponse addSchedule(ScheduleIncludeRequest request) {
     var userId = request.userId();
     var roomId = request.roomId();
@@ -35,11 +39,10 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
     roomService.roomExistsOrThrowException(roomId);
 
     if (scheduleDateIsNotAtLeastToday(scheduleDate)) {
-      throw new RuntimeException(
-          "You must schedule for a day that is today or a day in the future.");
+      throw new ApiException(ApiErrorEnum.INVALID_DATE);
     }
     if (scheduleAlreadyExists(roomId, scheduleDate)) {
-      throw new RuntimeException("This schedule already exists.");
+      throw new ApiException(ApiErrorEnum.SCHEDULE_EXISTS);
     }
 
     var newSchedule = new Schedule(request);
@@ -48,6 +51,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
 
   @Override
   public PagedModel<ScheduleResponse> listNextSchedules(Long id, Pageable pagination) {
+    userService.userExistsOrThrowException(id);
     return new PagedModel<ScheduleResponse>(
         scheduleRepository
             .findNextSchedulesByUserId(id, LocalDate.now(), pagination)
@@ -55,16 +59,21 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   }
 
   @Override
+  @Transactional
   public void removeSchedule(ScheduleRemoveRequest request) {
+    userService.userExistsOrThrowException(request.userId());
     var scheduleId = new ScheduleId(request);
-    executeActionIfEntityExists(
-        scheduleId,
-        scheduleRepository,
-        schedule -> {
-          scheduleRepository.deleteById(scheduleId);
-          return null;
-        },
-        "This schedule does not exist.");
+
+    var scheduleExists = scheduleRepository.existsByUserIdAndRoomIdAndScheduleDate(
+        request.userId(),
+        scheduleId.getRoom(),
+        scheduleId.getScheduleDate());
+
+    if (scheduleExists) {
+      scheduleRepository.deleteById(scheduleId);
+    } else {
+      throw new ApiException(ApiErrorEnum.SCHEDULE_DOESNT_EXIST);
+    }
   }
 
   private boolean scheduleAlreadyExists(Long roomId, LocalDate scheduleDate) {
