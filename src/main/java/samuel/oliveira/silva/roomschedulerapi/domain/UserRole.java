@@ -9,7 +9,7 @@ import samuel.oliveira.silva.roomschedulerapi.infra.deserializer.UserRoleDeseria
 @JsonDeserialize(using = UserRoleDeserializer.class)
 public enum UserRole {
 
-  ADMIN,
-  USER;
+  ROLE_ADMIN,
+  ROLE_USER;
 
 }

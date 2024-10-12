@@ -1,4 +1,4 @@
-package samuel.oliveira.silva.roomschedulerapi.domain.exception;
+package samuel.oliveira.silva.roomschedulerapi.infra.exception;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

@@ -5,8 +5,8 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
+import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 
 /** This class implements a validation to Strings who have to have a date format. */
 public class LocalDateStringValidator implements ConstraintValidator<ValidDate, String> {

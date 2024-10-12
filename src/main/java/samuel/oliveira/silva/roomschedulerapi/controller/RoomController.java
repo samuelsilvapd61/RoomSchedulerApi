@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
+import samuel.oliveira.silva.roomschedulerapi.utils.Constants;
 
 /** Controller for Room. */
 @RestController
@@ -52,8 +54,12 @@ public class RoomController {
   }
 
   @GetMapping
+  @Secured(Constants.ROLE_USER) // This annotation is just a test, it will be removed soon
   public ResponseEntity<PagedModel<RoomResponse>> listRooms(
-      @PageableDefault(size = 10, sort = {ID}) Pageable pagination) {
+      @PageableDefault(
+              size = 10,
+              sort = {ID})
+          Pageable pagination) {
     return ResponseEntity.ok(service.listRooms(pagination));
   }
 

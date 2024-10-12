@@ -2,8 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.service;
 
 import java.util.function.Function;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 
 /** Class to provide support methods. */
 public interface EntityActionExecutor {

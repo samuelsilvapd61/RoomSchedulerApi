@@ -1,4 +1,4 @@
-package samuel.oliveira.silva.roomschedulerapi.domain.exception;
+package samuel.oliveira.silva.roomschedulerapi.infra.exception;
 
 import io.micrometer.common.util.StringUtils;
 import java.util.Optional;

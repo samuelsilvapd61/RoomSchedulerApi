@@ -11,6 +11,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;
  * @param role role
  * @param document document
  * @param email email
+ * @param password password
  * @param name name
  */
 public record UserIncludeRequest(
@@ -23,6 +24,9 @@ public record UserIncludeRequest(
     @Email
     @NotBlank
     String email,
+
+    @NotBlank
+    String password,
 
     @NotBlank
     String name

@@ -2,6 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.infra.exception;
 
 import static java.time.LocalDateTime.now;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,15 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorDto;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
 
 /** Interceptor for exceptions. Personalizes and returns clean responses for errors. */
 @RestControllerAdvice
@@ -36,8 +35,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   record StringLength(String value, int length) {}
 
   /**
-   * Handler to intercept ApiException.
-   * Usually happens when an exception is thrown manually in the code.
+   * Handler to intercept ApiException. Usually happens when an exception is thrown manually in the
+   * code.
    *
    * @param ex exception
    * @param request request
@@ -46,6 +45,37 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(ApiException.class)
   public ResponseEntity<Object> handleApiException(ApiException ex, WebRequest request) {
     var apiError = buildApiError(ex);
+    var status = HttpStatus.valueOf(apiError.getStatus());
+    return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
+  }
+
+  /**
+   * Handler to intercept ConnectException. It's an error that happens when the connection with
+   * database timeouts.
+   *
+   * @param ex exception
+   * @param request request
+   * @return a ApiErrorDto
+   */
+  @ExceptionHandler(ConnectException.class)
+  public ResponseEntity<Object> handleConnectException(ConnectException ex, WebRequest request) {
+    var apiError = buildApiError(ApiErrorEnum.GATEWAY_TIMEOUT_ERROR);
+    var status = HttpStatus.valueOf(apiError.getStatus());
+    return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
+  }
+
+  /**
+   * Handler to intercept UsernameNotFoundException. It's an error that happens when, in
+   * authentication, the user was not found in the database.
+   *
+   * @param ex exception
+   * @param request request
+   * @return a ApiErrorDto
+   */
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<Object> handleUsernameNotFoundException(
+      UsernameNotFoundException ex, WebRequest request) {
+    var apiError = buildApiError(ApiErrorEnum.USER_DOESNT_EXIST);
     var status = HttpStatus.valueOf(apiError.getStatus());
     return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
   }

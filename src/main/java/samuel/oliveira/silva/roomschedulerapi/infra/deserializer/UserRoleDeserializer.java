@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiErrorEnum;
-import samuel.oliveira.silva.roomschedulerapi.domain.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
+import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 
 /**
  * Validates if the value received in the request matches one of the possible values in UserRole.

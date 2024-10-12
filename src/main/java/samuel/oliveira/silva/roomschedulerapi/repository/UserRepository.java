@@ -2,6 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
 
@@ -16,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   boolean existsByDocument(String document);
 
   boolean existsByEmail(String email);
+
+  UserDetails findByEmail(String username);
 }
