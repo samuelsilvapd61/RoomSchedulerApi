@@ -39,7 +39,6 @@ public class SecurityConfiguration {
    * @return securityFilterChain
    * @throws Exception exception
    */
-  // TODO - Tratar exceção
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf(csrf -> csrf.disable())
@@ -51,12 +50,18 @@ public class SecurityConfiguration {
               request.anyRequest().authenticated();
             })
         .exceptionHandling(
-            exceptions ->
-                exceptions.authenticationEntryPoint(
-                    (request, response, accessDeniedException) -> {
-                      exceptionHandler.handleException(
-                          request, response, new ApiException(ApiErrorEnum.ACCESS_UNAUTHORIZED));
-                    }))
+            exceptions -> {
+              exceptions.authenticationEntryPoint(
+                  (request, response, accessDeniedException) -> {
+                    exceptionHandler.handleException(
+                        request, response, new ApiException(ApiErrorEnum.ACCESS_UNAUTHORIZED));
+                  });
+              exceptions.accessDeniedHandler(
+                  (request, response, accessDeniedException) -> {
+                    exceptionHandler.handleException(
+                        request, response, new ApiException(ApiErrorEnum.ACCESS_DENIED));
+                  });
+            })
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }

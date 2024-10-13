@@ -38,8 +38,8 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   }
 
   @Override
-  public PagedModel<RoomResponse> listRooms(Pageable pagination) {
-    return new PagedModel<>(repository.findAll(pagination).map(RoomResponse::new));
+  public PagedModel<RoomResponse> listRooms(String name, Pageable pagination) {
+    return new PagedModel<>(repository.findAllByName(name, pagination).map(RoomResponse::new));
   }
 
   @Override

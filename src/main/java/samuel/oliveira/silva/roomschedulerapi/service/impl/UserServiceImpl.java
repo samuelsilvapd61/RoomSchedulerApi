@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
-import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
@@ -47,18 +47,18 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
   }
 
   @Override
-  public PagedModel<UserResponse> listUsers(Pageable pagination) {
-    return new PagedModel<>(repository.findAll(pagination).map(UserResponse::new));
+  public PagedModel<UserResponse> listUsers(String email, Pageable pagination) {
+    return new PagedModel<>(repository.findAllByEmail(email, pagination).map(UserResponse::new));
   }
 
   @Override
-  public UserResponse updateUser(UserUpdateRequest request) {
+  public UserResponse updateUser(UserUpdateRoleRequest request) {
     var newUser =
         executeActionIfEntityExists(
-            request.id(),
+            request.userId(),
             repository,
             user -> {
-              user.updateUser(request);
+              user.updateUserRole(request);
               return repository.save(user);
             },
             new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));

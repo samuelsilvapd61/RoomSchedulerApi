@@ -21,9 +21,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
-import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleRequest;
 
 /**
  * Entity user.
@@ -56,16 +55,15 @@ public class User implements UserDetails {
    */
   public User(UserIncludeRequest request) {
     this.id = null;
-    this.role = request.role();
+    this.role = UserRole.ROLE_USER;
     this.document = request.document();
     this.email = request.email();
     this.password = request.password();
     this.name = request.name();
   }
 
-  public void updateUser(UserUpdateRequest request) {
+  public void updateUserRole(UserUpdateRoleRequest request) {
     this.role = request.role();
-    this.name = request.name();
   }
 
   @PrePersist

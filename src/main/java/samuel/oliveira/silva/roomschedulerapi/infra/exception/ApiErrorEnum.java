@@ -2,6 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.infra.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.GATEWAY_TIMEOUT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -18,7 +19,7 @@ import org.springframework.http.HttpStatus;
 public enum ApiErrorEnum {
 
   // User
-  USER_ID_NULL ("NotNull.userUpdateRequest.id", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
+  USER_ID_NULL ("NotNull.userUpdateRoleRequest.userId", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   USER_ROLE_NULL ("NotNull.userIncludeRequest.role", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   USER_DOCUMENT_BLANK("NotBlank.userIncludeRequest.document", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   USER_EMAIL_BLANK ("NotBlank.userIncludeRequest.email", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
@@ -40,14 +41,13 @@ public enum ApiErrorEnum {
   SCHEDULE_EXISTS ("msg.schedule.exists", CONFLICT, CONFLICT.getReasonPhrase()),
   SCHEDULE_DOESNT_EXIST ("msg.schedule.doesnt-exist", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
 
-  // Login
-
   // Generics
   INVALID_FIELD     ("msg.invalid.field", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   DATE_FORMAT ("msg.date-format", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   INVALID_DATE ("msg.invalid-date", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   INVALID_JSON ("msg.invalid-json", BAD_REQUEST, BAD_REQUEST.getReasonPhrase()),
   ACCESS_UNAUTHORIZED ("msg.access-unauthorized", UNAUTHORIZED, UNAUTHORIZED.getReasonPhrase()),
+  ACCESS_DENIED ("msg.access-denied", FORBIDDEN, FORBIDDEN.getReasonPhrase()),
   GATEWAY_TIMEOUT_ERROR ("msg.gateway-timeout-error", GATEWAY_TIMEOUT, GATEWAY_TIMEOUT.getReasonPhrase()),
   GENERIC_ERROR ("msg.generic-error", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.getReasonPhrase());
 

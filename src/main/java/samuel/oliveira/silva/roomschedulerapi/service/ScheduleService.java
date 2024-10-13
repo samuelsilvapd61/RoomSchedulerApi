@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleRemoveRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomSchedulesResponse;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
 
 /**
@@ -13,8 +14,11 @@ public interface ScheduleService {
 
   ScheduleResponse addSchedule(ScheduleIncludeRequest request);
 
-  PagedModel<ScheduleResponse> listNextSchedules(Long id, Pageable pagination);
+  PagedModel<ScheduleResponse> listNextUserSchedules(Long id, Pageable pagination);
+
+  RoomSchedulesResponse listNextRoomSchedules(Long id);
 
   void removeSchedule(ScheduleRemoveRequest request);
+
 
 }

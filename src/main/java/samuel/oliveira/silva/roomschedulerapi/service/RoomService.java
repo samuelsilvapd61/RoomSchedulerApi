@@ -13,7 +13,7 @@ public interface RoomService {
 
   RoomResponse getRoom(Long id);
 
-  PagedModel<RoomResponse> listRooms(Pageable pagination);
+  PagedModel<RoomResponse> listRooms(String name, Pageable pagination);
 
   RoomResponse updateRoom(RoomUpdateRequest request);
 

@@ -1,24 +1,20 @@
 package samuel.oliveira.silva.roomschedulerapi.domain.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;
 
 /**
  * Body to update user.
  *
- * @param id id
+ * @param userId userId
  * @param role role
- * @param name name
  */
-public record UserUpdateRequest(
+public record UserUpdateRoleRequest(
     @NotNull
-    Long id,
+    Long userId,
 
     @NotNull
-    UserRole role,
+    UserRole role
 
-    @NotBlank
-    String name
 ) {
 }

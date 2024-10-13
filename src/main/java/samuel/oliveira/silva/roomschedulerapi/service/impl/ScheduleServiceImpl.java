@@ -1,6 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -10,6 +12,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.Schedule;
 import samuel.oliveira.silva.roomschedulerapi.domain.ScheduleId;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleRemoveRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomSchedulesResponse;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
@@ -38,7 +41,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
     userService.userExistsOrThrowException(userId);
     roomService.roomExistsOrThrowException(roomId);
 
-    if (scheduleDateIsNotAtLeastToday(scheduleDate)) {
+    if (scheduleDateIsNotBetweenTodayAnd3MonthsLater(scheduleDate)) {
       throw new ApiException(ApiErrorEnum.INVALID_DATE);
     }
     if (scheduleAlreadyExists(roomId, scheduleDate)) {
@@ -50,7 +53,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   }
 
   @Override
-  public PagedModel<ScheduleResponse> listNextSchedules(Long id, Pageable pagination) {
+  public PagedModel<ScheduleResponse> listNextUserSchedules(Long id, Pageable pagination) {
     userService.userExistsOrThrowException(id);
     return new PagedModel<ScheduleResponse>(
         scheduleRepository
@@ -59,15 +62,23 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   }
 
   @Override
+  public RoomSchedulesResponse listNextRoomSchedules(Long id) {
+    roomService.roomExistsOrThrowException(id);
+    List<Date> dates = scheduleRepository.findNextSchedulesByRoomId(id, LocalDate.now());
+    var localDates = dates.stream().map(Date::toLocalDate).toList();
+
+    return new RoomSchedulesResponse(id, localDates);
+  }
+
+  @Override
   @Transactional
   public void removeSchedule(ScheduleRemoveRequest request) {
     userService.userExistsOrThrowException(request.userId());
     var scheduleId = new ScheduleId(request);
 
-    var scheduleExists = scheduleRepository.existsByUserIdAndRoomIdAndScheduleDate(
-        request.userId(),
-        scheduleId.getRoom(),
-        scheduleId.getScheduleDate());
+    var scheduleExists =
+        scheduleRepository.existsByUserIdAndRoomIdAndScheduleDate(
+            request.userId(), scheduleId.getRoom(), scheduleId.getScheduleDate());
 
     if (scheduleExists) {
       scheduleRepository.deleteById(scheduleId);
@@ -83,7 +94,8 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
     return existingSchedule.isPresent();
   }
 
-  private boolean scheduleDateIsNotAtLeastToday(LocalDate scheduleDate) {
-    return scheduleDate.isBefore(LocalDate.now());
+  private boolean scheduleDateIsNotBetweenTodayAnd3MonthsLater(LocalDate scheduleDate) {
+    return scheduleDate.isBefore(LocalDate.now())
+        || scheduleDate.isAfter(LocalDate.now().plusDays(90));
   }
 }

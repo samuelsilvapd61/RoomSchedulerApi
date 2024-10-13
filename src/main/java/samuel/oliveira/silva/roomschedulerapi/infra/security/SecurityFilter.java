@@ -29,7 +29,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
   @Autowired private TokenService tokenService;
   @Autowired private AuthenticationService authenticationService;
-  @Autowired private ManualExceptionHandler exceptionHandler;
+  @Autowired private ManualExceptionHandler manualExceptionHandler;
 
   @Override
   protected void doFilterInternal(
@@ -41,17 +41,17 @@ public class SecurityFilter extends OncePerRequestFilter {
 
       if (tokenJwt != null) {
         var subject = tokenService.getSubject(tokenJwt);
-        var user = authenticationService.loadUserByUsername(subject);
+        var user = authenticationService.loadUserByJwtToken(subject);
 
         var authentication =
             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } catch (ApiException ex) {
-      exceptionHandler.handleException(request, response, ex);
+      manualExceptionHandler.handleException(request, response, ex);
       return;
     } catch (Exception ex) {
-      exceptionHandler.handleException(
+      manualExceptionHandler.handleException(
           request, response, new ApiException(ApiErrorEnum.ACCESS_UNAUTHORIZED));
       return;
     }

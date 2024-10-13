@@ -1,6 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.EMPTY_STRING;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ID;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NAME;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ROOM;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
@@ -41,6 +44,7 @@ public class RoomController {
    * @return a new room
    */
   @PostMapping
+  @Secured(Constants.ROLE_ADMIN)
   public ResponseEntity<RoomResponse> includeRoom(
       @Valid @RequestBody RoomIncludeRequest request, UriComponentsBuilder uriBuilder) {
     var room = service.addRoom(request);
@@ -54,21 +58,20 @@ public class RoomController {
   }
 
   @GetMapping
-  @Secured(Constants.ROLE_USER) // This annotation is just a test, it will be removed soon
   public ResponseEntity<PagedModel<RoomResponse>> listRooms(
-      @PageableDefault(
-              size = 10,
-              sort = {ID})
-          Pageable pagination) {
-    return ResponseEntity.ok(service.listRooms(pagination));
+      @RequestParam(value = NAME, defaultValue = EMPTY_STRING) String name,
+      @PageableDefault(size = 10, sort = {ID}) Pageable pagination) {
+    return ResponseEntity.ok(service.listRooms(name, pagination));
   }
 
   @PutMapping
+  @Secured(Constants.ROLE_ADMIN)
   public ResponseEntity<RoomResponse> updateRoom(@Valid @RequestBody RoomUpdateRequest request) {
     return ResponseEntity.ok(service.updateRoom(request));
   }
 
   @DeleteMapping(PATH_ID)
+  @Secured(Constants.ROLE_ADMIN)
   public ResponseEntity<Void> removeRoom(@PathVariable Long id) {
     service.removeRoom(id);
     return ResponseEntity.noContent().build();
