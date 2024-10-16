@@ -6,6 +6,7 @@ import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_SCHEDU
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_USER;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.SCHEDULE_DATE;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import samuel.oliveira.silva.roomschedulerapi.service.ScheduleService;
 /** Controller of Schedule. */
 @RestController
 @RequestMapping(PATH_SCHEDULE)
+@SecurityRequirement(name = "bearer-key")
 public class ScheduleController {
 
   @Autowired private ScheduleService service;
@@ -62,8 +64,7 @@ public class ScheduleController {
   }
 
   @GetMapping(PATH_ROOM + PATH_ID)
-  public ResponseEntity<RoomSchedulesResponse> listNextRoomSchedules(
-      @PathVariable Long id) {
+  public ResponseEntity<RoomSchedulesResponse> listNextRoomSchedules(@PathVariable Long id) {
     return ResponseEntity.ok(service.listNextRoomSchedules(id));
   }
 

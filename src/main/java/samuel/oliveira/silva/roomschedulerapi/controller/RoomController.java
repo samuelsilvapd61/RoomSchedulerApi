@@ -6,6 +6,7 @@ import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NAME;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ROOM;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ import samuel.oliveira.silva.roomschedulerapi.utils.Constants;
 /** Controller for Room. */
 @RestController
 @RequestMapping(PATH_ROOM)
+@SecurityRequirement(name = "bearer-key")
 public class RoomController {
 
   @Autowired private RoomService service;

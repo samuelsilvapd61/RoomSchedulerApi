@@ -7,6 +7,7 @@ import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_USER;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROLE_ADMIN;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -53,12 +54,14 @@ public class UserController {
 
   @GetMapping(PATH_ID)
   @Secured(ROLE_ADMIN)
+  @SecurityRequirement(name = "bearer-key")
   public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
     return ResponseEntity.ok(service.getUser(id));
   }
 
   @GetMapping
   @Secured(ROLE_ADMIN)
+  @SecurityRequirement(name = "bearer-key")
   public ResponseEntity<PagedModel<UserResponse>> listUsers(
       @RequestParam(value = EMAIL, defaultValue = EMPTY_STRING) String email,
       @PageableDefault(size = 10, sort = {ID}) Pageable pagination) {
@@ -67,6 +70,7 @@ public class UserController {
 
   @PutMapping
   @Secured(ROLE_ADMIN)
+  @SecurityRequirement(name = "bearer-key")
   public ResponseEntity<UserResponse> updateUser(
       @Valid @RequestBody UserUpdateRoleRequest request) {
     return ResponseEntity.ok(service.updateUser(request));
@@ -74,6 +78,7 @@ public class UserController {
 
   @DeleteMapping(PATH_ID)
   @Secured(ROLE_ADMIN)
+  @SecurityRequirement(name = "bearer-key")
   public ResponseEntity<Void> removeUser(@PathVariable Long id) {
     service.removeUser(id);
     return ResponseEntity.noContent().build();

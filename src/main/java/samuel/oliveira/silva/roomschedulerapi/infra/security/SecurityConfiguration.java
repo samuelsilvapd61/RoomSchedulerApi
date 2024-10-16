@@ -47,6 +47,9 @@ public class SecurityConfiguration {
             request -> {
               request.requestMatchers(HttpMethod.POST, PATH_LOGIN).permitAll();
               request.requestMatchers(HttpMethod.POST, PATH_USER).permitAll();
+              request
+                  .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                  .permitAll();
               request.anyRequest().authenticated();
             })
         .exceptionHandling(

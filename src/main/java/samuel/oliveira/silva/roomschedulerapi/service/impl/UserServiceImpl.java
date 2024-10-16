@@ -11,6 +11,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleReque
 import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.infra.security.SecurityConfiguration;
 import samuel.oliveira.silva.roomschedulerapi.repository.UserRepository;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
@@ -20,6 +21,8 @@ import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 public class UserServiceImpl implements UserService, EntityActionExecutor {
 
   @Autowired UserRepository repository;
+  @Autowired SecurityConfiguration securityConfiguration;
+
 
   @Override
   @Transactional
@@ -33,9 +36,16 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
       throw new ApiException(ApiErrorEnum.EMAIL_EXISTS);
     }
 
-    var user = new User(request);
+    var user = createEntityAndEncodePassword(request);;
     var newUser = repository.save(user);
     return new UserResponse(newUser);
+  }
+
+  private User createEntityAndEncodePassword(UserIncludeRequest request) {
+    var encoder = securityConfiguration.passwordEncoder();
+    var user = new User(request);
+    user.setPassword(encoder.encode(request.password()));
+    return user;
   }
 
   @Override
