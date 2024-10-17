@@ -1,8 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.Room;
@@ -12,6 +12,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.repository.RoomRepository;
+import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 
@@ -20,12 +21,14 @@ import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
   @Autowired RoomRepository repository;
+  @Autowired CacheServiceImpl cacheService;
 
   @Override
   @Transactional
   public RoomResponse addRoom(RoomIncludeRequest request) {
     var room = new Room(request);
     var newRoom = repository.save(room);
+    cacheService.updateRoomsCache();
     return new RoomResponse(newRoom);
   }
 
@@ -38,8 +41,9 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   }
 
   @Override
-  public PagedModel<RoomResponse> listRooms(String name, Pageable pagination) {
-    return new PagedModel<>(repository.findAllByName(name, pagination).map(RoomResponse::new));
+  @Cacheable("rooms")
+  public List<RoomResponse> listAllRooms() {
+    return repository.findAll().stream().map(RoomResponse::new).toList();
   }
 
   @Override
@@ -53,6 +57,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
               return repository.save(room);
             },
             new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
+    cacheService.updateRoomsCache();
     return new RoomResponse(newRoom);
   }
 
@@ -67,6 +72,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
           return null;
         },
         new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
+    cacheService.updateRoomsCache();
   }
 
   /**

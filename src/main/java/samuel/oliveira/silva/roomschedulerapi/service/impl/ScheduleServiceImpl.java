@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
+import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 import samuel.oliveira.silva.roomschedulerapi.service.ScheduleService;
@@ -32,24 +34,20 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
 
   @Autowired RoomService roomService;
 
+  @Autowired CacheServiceImpl cacheService;
+
   @Override
   @Transactional
   public ScheduleResponse addSchedule(ScheduleIncludeRequest request) {
     var userId = request.userId();
     var roomId = request.roomId();
     var scheduleDate = LocalDate.parse(request.scheduleDate());
-    userService.userExistsOrThrowException(userId);
-    roomService.roomExistsOrThrowException(roomId);
+    validateSchedule(userId, roomId, scheduleDate);
+    var newScheduleEntity = new Schedule(request);
+    var newSavedSchedule = scheduleRepository.save(newScheduleEntity);
 
-    if (scheduleDateIsNotBetweenTodayAnd3MonthsLater(scheduleDate)) {
-      throw new ApiException(ApiErrorEnum.INVALID_DATE);
-    }
-    if (scheduleAlreadyExists(roomId, scheduleDate)) {
-      throw new ApiException(ApiErrorEnum.SCHEDULE_EXISTS);
-    }
-
-    var newSchedule = new Schedule(request);
-    return new ScheduleResponse(scheduleRepository.save(newSchedule));
+    cacheService.updateNextRoomSchedules(roomId, LocalDate.now());
+    return new ScheduleResponse(newSavedSchedule);
   }
 
   @Override
@@ -62,6 +60,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   }
 
   @Override
+  @Cacheable(value = "nextRoomSchedules", key = "#id")
   public RoomSchedulesResponse listNextRoomSchedules(Long id) {
     roomService.roomExistsOrThrowException(id);
     List<Date> dates = scheduleRepository.findNextSchedulesByRoomId(id, LocalDate.now());
@@ -82,8 +81,21 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
 
     if (scheduleExists) {
       scheduleRepository.deleteById(scheduleId);
+      cacheService.updateNextRoomSchedules(scheduleId.getRoom(), LocalDate.now());
     } else {
       throw new ApiException(ApiErrorEnum.SCHEDULE_DOESNT_EXIST);
+    }
+  }
+
+  private void validateSchedule(Long userId, Long roomId, LocalDate scheduleDate) {
+    userService.userExistsOrThrowException(userId);
+    roomService.roomExistsOrThrowException(roomId);
+
+    if (scheduleDateIsNotBetweenTodayAnd3MonthsLater(scheduleDate)) {
+      throw new ApiException(ApiErrorEnum.INVALID_DATE);
+    }
+    if (scheduleAlreadyExists(roomId, scheduleDate)) {
+      throw new ApiException(ApiErrorEnum.SCHEDULE_EXISTS);
     }
   }
 

@@ -1,17 +1,13 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.EMPTY_STRING;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ID;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NAME;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ROOM;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.PagedModel;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
@@ -37,6 +32,8 @@ import samuel.oliveira.silva.roomschedulerapi.utils.Constants;
 public class RoomController {
 
   @Autowired private RoomService service;
+
+  @Autowired private CacheManager cacheManager;
 
   /**
    * Adds a new user.
@@ -60,10 +57,8 @@ public class RoomController {
   }
 
   @GetMapping
-  public ResponseEntity<PagedModel<RoomResponse>> listRooms(
-      @RequestParam(value = NAME, defaultValue = EMPTY_STRING) String name,
-      @PageableDefault(size = 10, sort = {ID}) Pageable pagination) {
-    return ResponseEntity.ok(service.listRooms(name, pagination));
+  public ResponseEntity<List<RoomResponse>> listRooms() {
+    return ResponseEntity.ok(service.listAllRooms());
   }
 
   @PutMapping
