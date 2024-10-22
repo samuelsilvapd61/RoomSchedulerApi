@@ -19,5 +19,15 @@ services:
       - "6379:6379"
     command: ["redis-server", "--requirepass", "root"]
 
+  rabbitmq:
+    image: rabbitmq:4.0.2-management
+    container_name: rabbitmq-container
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 volumes:
   db_data:

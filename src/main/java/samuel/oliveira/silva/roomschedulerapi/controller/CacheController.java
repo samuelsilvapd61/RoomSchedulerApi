@@ -1,6 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
 
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_CACHE;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import samuel.oliveira.silva.roomschedulerapi.utils.Constants;
  * Controller to Cache.
  */
 @RestController
-@RequestMapping("/cache")
+@RequestMapping(PATH_CACHE)
 @Secured(Constants.ROLE_ADMIN)
 @SecurityRequirement(name = "bearer-key")
 public class CacheController {

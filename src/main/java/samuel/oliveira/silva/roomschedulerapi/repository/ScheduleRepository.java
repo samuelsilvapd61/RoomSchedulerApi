@@ -29,4 +29,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, ScheduleId> 
               + "AND s.schedule_date >= ?2",
       nativeQuery = true)
   List<Date> findNextSchedulesByRoomId(Long roomId, LocalDate scheduleDate);
+
+  @Query(value =
+      "SELECT users.email FROM users "
+          + "INNER JOIN schedules ON users.id = schedules.user_id "
+          + "WHERE schedules.room_id = ?1 AND schedules.schedule_date >= ?2",
+      nativeQuery = true)
+  List<String> listUsersWithExistingSchedulesForThisRoom(Long id, LocalDate scheduleDate);
 }

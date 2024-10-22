@@ -1,10 +1,16 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
+import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.UPDATED_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROOMS;
+
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
 import samuel.oliveira.silva.roomschedulerapi.domain.Room;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
@@ -12,7 +18,9 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.repository.RoomRepository;
+import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
 import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
+import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 
@@ -22,6 +30,8 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
   @Autowired RoomRepository repository;
   @Autowired CacheServiceImpl cacheService;
+  @Autowired ScheduleRepository scheduleRepository;
+  @Autowired EmailService emailService;
 
   @Override
   @Transactional
@@ -41,7 +51,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   }
 
   @Override
-  @Cacheable("rooms")
+  @Cacheable(ROOMS)
   public List<RoomResponse> listAllRooms() {
     return repository.findAll().stream().map(RoomResponse::new).toList();
   }
@@ -58,6 +68,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
             },
             new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
     cacheService.updateRoomsCache();
+    sendEmailToAffectedUsers(request.id(), UPDATED_ROOM);
     return new RoomResponse(newRoom);
   }
 
@@ -68,6 +79,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
         id,
         repository,
         room -> {
+          sendEmailToAffectedUsers(room.getId(), REMOVED_ROOM);
           repository.deleteById(room.getId());
           return null;
         },
@@ -83,5 +95,11 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   public void roomExistsOrThrowException(Long id) {
     executeActionIfEntityExists(
         id, repository, room -> null, new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
+  }
+
+  private void sendEmailToAffectedUsers(Long roomId, EmailEvent event) {
+    var emailList =
+        scheduleRepository.listUsersWithExistingSchedulesForThisRoom(roomId, LocalDate.now());
+    emailList.forEach(email -> emailService.sendEmail(event, email));
   }
 }

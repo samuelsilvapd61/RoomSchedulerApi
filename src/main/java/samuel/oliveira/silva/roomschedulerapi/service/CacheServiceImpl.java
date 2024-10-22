@@ -1,5 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.service;
 
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NEXT_ROOM_SCHEDULES;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROOMS;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -39,12 +42,12 @@ public class CacheServiceImpl {
         .forEach(Cache::clear);
   }
 
-  @CachePut("rooms")
+  @CachePut(ROOMS)
   public List<RoomResponse> updateRoomsCache() {
     return roomRepository.findAll().stream().map(RoomResponse::new).toList();
   }
 
-  @CacheEvict(value = "nextRoomSchedules", allEntries = true)
+  @CacheEvict(value = NEXT_ROOM_SCHEDULES, allEntries = true)
   @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
   public void clearRoomsSchedulesCache() {}
 
@@ -56,7 +59,7 @@ public class CacheServiceImpl {
    * @param date date
    * @return the response that would be returned by the database
    */
-  @CachePut(value = "nextRoomSchedules", key = "#id")
+  @CachePut(value = NEXT_ROOM_SCHEDULES, key = "#id")
   public RoomSchedulesResponse updateNextRoomSchedules(Long id, LocalDate date) {
     var dates = scheduleRepository.findNextSchedulesByRoomId(id, date);
     var localDates = dates.stream().map(Date::toLocalDate).toList();

@@ -2,6 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
@@ -19,5 +20,5 @@ public interface UserService {
 
   void removeUser(Long id);
 
-  void userExistsOrThrowException(Long id);
+  User getUserExistsOrThrowException(Long id);
 }

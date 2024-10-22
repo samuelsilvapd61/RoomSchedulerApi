@@ -113,6 +113,11 @@
       <version>2.6.0</version>
     </dependency>
 
+    <!--    Email Sending-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

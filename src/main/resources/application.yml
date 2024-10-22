@@ -21,9 +21,21 @@ spring:
       password: ${REDIS_PASSWORD}
   cache:
     type: redis
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_HOST}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
 
 api:
   security:
-      token:
-        secret: ${AUTHENTICATION_SECRET}
+    token:
+      secret: ${AUTHENTICATION_SECRET}

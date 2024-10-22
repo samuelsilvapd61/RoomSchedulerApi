@@ -1,5 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
+import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.INCLUDED_USER;
+import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_USER;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -13,6 +16,7 @@ import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.infra.security.SecurityConfiguration;
 import samuel.oliveira.silva.roomschedulerapi.repository.UserRepository;
+import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 
@@ -22,30 +26,18 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
 
   @Autowired UserRepository repository;
   @Autowired SecurityConfiguration securityConfiguration;
-
+  @Autowired EmailService emailService;
 
   @Override
   @Transactional
   public UserResponse addUser(UserIncludeRequest request) {
     var document = request.document();
     var email = request.email();
-    if (documentAlreadyExists(document)) {
-      throw new ApiException(ApiErrorEnum.DOCUMENT_EXISTS);
-    }
-    if (emailAlreadyExists(email)) {
-      throw new ApiException(ApiErrorEnum.EMAIL_EXISTS);
-    }
+    validateIfUserCanBeAdded(document, email);
+    var newUser = addUserInDatabase(request);
 
-    var user = createEntityAndEncodePassword(request);;
-    var newUser = repository.save(user);
+    emailService.sendEmail(INCLUDED_USER, request.email());
     return new UserResponse(newUser);
-  }
-
-  private User createEntityAndEncodePassword(UserIncludeRequest request) {
-    var encoder = securityConfiguration.passwordEncoder();
-    var user = new User(request);
-    user.setPassword(encoder.encode(request.password()));
-    return user;
   }
 
   @Override
@@ -78,24 +70,48 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
   @Override
   @Transactional
   public void removeUser(Long id) {
-    executeActionIfEntityExists(
-        id,
-        repository,
-        user -> {
-          repository.deleteById(user.getId());
-          return null;
-        },
-        new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
+    var removedUser =
+        executeActionIfEntityExists(
+            id,
+            repository,
+            user -> {
+              repository.deleteById(user.getId());
+              return user;
+            },
+            new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
+
+    emailService.sendEmail(REMOVED_USER, removedUser.getEmail());
   }
 
   @Override
-  public void userExistsOrThrowException(Long id) {
-    executeActionIfEntityExists(
-        id, repository, user -> null, new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
+  public User getUserExistsOrThrowException(Long id) {
+    return executeActionIfEntityExists(
+        id, repository, user -> user, new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
   }
 
   private boolean documentAlreadyExists(String document) {
     return repository.existsByDocument(document);
+  }
+
+  private User addUserInDatabase(UserIncludeRequest request) {
+    var user = createEntityAndEncodePassword(request);
+    return repository.save(user);
+  }
+
+  private void validateIfUserCanBeAdded(String document, String email) {
+    if (documentAlreadyExists(document)) {
+      throw new ApiException(ApiErrorEnum.DOCUMENT_EXISTS);
+    }
+    if (emailAlreadyExists(email)) {
+      throw new ApiException(ApiErrorEnum.EMAIL_EXISTS);
+    }
+  }
+
+  private User createEntityAndEncodePassword(UserIncludeRequest request) {
+    var encoder = securityConfiguration.passwordEncoder();
+    var user = new User(request);
+    user.setPassword(encoder.encode(request.password()));
+    return user;
   }
 
   private boolean emailAlreadyExists(String email) {
