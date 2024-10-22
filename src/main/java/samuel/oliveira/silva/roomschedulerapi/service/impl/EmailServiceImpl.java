@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
 import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 
+/**
+ * Class to send email to the user.
+ */
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -17,13 +20,12 @@ public class EmailServiceImpl implements EmailService {
   @Autowired private JavaMailSender mailSender;
 
   @Override
-  public String sendEmail(EmailEvent event, String emailDestiny) {
+  public void sendEmail(EmailEvent event, String emailDestiny) {
     var email = new SimpleMailMessage();
     email.setFrom(emailHost);
     email.setTo(emailDestiny);
     email.setSubject(event.getTitle());
     email.setText(event.getMessage());
     mailSender.send(email);
-    return null;
   }
 }

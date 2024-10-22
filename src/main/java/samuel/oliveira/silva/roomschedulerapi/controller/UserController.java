@@ -1,11 +1,11 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.EMAIL;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.EMPTY_STRING;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ID;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_USER;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROLE_ADMIN;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.EMAIL;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.EMPTY_STRING;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.ID;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_ID;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_USER;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Role.ROLE_ADMIN;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -64,7 +64,10 @@ public class UserController {
   @SecurityRequirement(name = "bearer-key")
   public ResponseEntity<PagedModel<UserResponse>> listUsers(
       @RequestParam(value = EMAIL, defaultValue = EMPTY_STRING) String email,
-      @PageableDefault(size = 10, sort = {ID}) Pageable pagination) {
+      @PageableDefault(
+              size = 10,
+              sort = {ID})
+          Pageable pagination) {
     return ResponseEntity.ok(service.listUsers(email, pagination));
   }
 

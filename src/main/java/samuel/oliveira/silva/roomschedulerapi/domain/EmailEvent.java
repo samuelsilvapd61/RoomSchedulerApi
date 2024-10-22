@@ -2,6 +2,9 @@ package samuel.oliveira.silva.roomschedulerapi.domain;
 
 import lombok.Getter;
 
+/**
+ * Class to represent the email that is going to be sent to the user.
+ */
 @Getter
 public enum EmailEvent {
   INCLUDED_USER("Account creation", "Your account was succesfully created!"),

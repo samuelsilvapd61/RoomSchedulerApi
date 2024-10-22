@@ -1,7 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_ID;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Role.ROLE_ADMIN;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -23,7 +24,6 @@ import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
-import samuel.oliveira.silva.roomschedulerapi.utils.Constants;
 
 /** Controller for Room. */
 @RestController
@@ -43,7 +43,7 @@ public class RoomController {
    * @return a new room
    */
   @PostMapping
-  @Secured(Constants.ROLE_ADMIN)
+  @Secured(ROLE_ADMIN)
   public ResponseEntity<RoomResponse> includeRoom(
       @Valid @RequestBody RoomIncludeRequest request, UriComponentsBuilder uriBuilder) {
     var room = service.addRoom(request);
@@ -62,13 +62,13 @@ public class RoomController {
   }
 
   @PutMapping
-  @Secured(Constants.ROLE_ADMIN)
+  @Secured(ROLE_ADMIN)
   public ResponseEntity<RoomResponse> updateRoom(@Valid @RequestBody RoomUpdateRequest request) {
     return ResponseEntity.ok(service.updateRoom(request));
   }
 
   @DeleteMapping(PATH_ID)
-  @Secured(Constants.ROLE_ADMIN)
+  @Secured(ROLE_ADMIN)
   public ResponseEntity<Void> removeRoom(@PathVariable Long id) {
     service.removeRoom(id);
     return ResponseEntity.noContent().build();

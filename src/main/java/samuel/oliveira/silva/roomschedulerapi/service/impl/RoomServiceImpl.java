@@ -2,7 +2,7 @@ package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_ROOM;
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.UPDATED_ROOM;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROOMS;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.ROOMS;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,16 +11,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
+import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.Room;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailDispatcher;
 import samuel.oliveira.silva.roomschedulerapi.repository.RoomRepository;
 import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
 import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
-import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 
@@ -31,7 +32,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   @Autowired RoomRepository repository;
   @Autowired CacheServiceImpl cacheService;
   @Autowired ScheduleRepository scheduleRepository;
-  @Autowired EmailService emailService;
+  @Autowired EmailDispatcher emailDispatcher;
 
   @Override
   @Transactional
@@ -100,6 +101,10 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
   private void sendEmailToAffectedUsers(Long roomId, EmailEvent event) {
     var emailList =
         scheduleRepository.listUsersWithExistingSchedulesForThisRoom(roomId, LocalDate.now());
-    emailList.forEach(email -> emailService.sendEmail(event, email));
+    var emailRequestList =
+        emailList.stream()
+            .map(email -> EmailRequest.builder().event(event).destiny(email).build())
+            .toList();
+    emailRequestList.forEach(emailRequest -> emailDispatcher.sendEmailToRabbitMq(emailRequest));
   }
 }

@@ -1,6 +1,6 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_LOGIN;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_LOGIN;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

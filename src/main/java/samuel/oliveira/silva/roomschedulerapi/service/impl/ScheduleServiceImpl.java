@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_SCHEDULE;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NEXT_ROOM_SCHEDULES;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.NEXT_ROOM_SCHEDULES;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.Schedule;
 import samuel.oliveira.silva.roomschedulerapi.domain.ScheduleId;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;
@@ -20,9 +21,9 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.RoomSchedulesRespo
 import samuel.oliveira.silva.roomschedulerapi.domain.response.ScheduleResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailDispatcher;
 import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
 import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
-import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 import samuel.oliveira.silva.roomschedulerapi.service.ScheduleService;
@@ -39,7 +40,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   @Autowired RoomService roomService;
 
   @Autowired CacheServiceImpl cacheService;
-  @Autowired EmailService emailService;
+  @Autowired EmailDispatcher emailDispatcher;
 
   @Override
   @Transactional
@@ -86,7 +87,8 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
 
     if (scheduleExists) {
       scheduleRepository.deleteById(scheduleId);
-      emailService.sendEmail(REMOVED_SCHEDULE, user.getEmail());
+      emailDispatcher.sendEmailToRabbitMq(
+          EmailRequest.builder().event(REMOVED_SCHEDULE).destiny(user.getEmail()).build());
       cacheService.updateNextRoomSchedules(scheduleId.getRoom(), LocalDate.now());
     } else {
       throw new ApiException(ApiErrorEnum.SCHEDULE_DOESNT_EXIST);

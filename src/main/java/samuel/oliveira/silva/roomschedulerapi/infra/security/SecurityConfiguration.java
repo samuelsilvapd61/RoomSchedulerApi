@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.infra.security;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_LOGIN;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_USER;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_LOGIN;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_USER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

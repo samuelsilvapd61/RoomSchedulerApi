@@ -1,7 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.service;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.NEXT_ROOM_SCHEDULES;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.ROOMS;
+
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.NEXT_ROOM_SCHEDULES;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.ROOMS;
 
 import java.sql.Date;
 import java.time.LocalDate;

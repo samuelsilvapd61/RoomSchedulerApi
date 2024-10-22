@@ -1,10 +1,10 @@
 package samuel.oliveira.silva.roomschedulerapi.controller;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ID;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_ROOM;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_SCHEDULE;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.PATH_USER;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.SCHEDULE_DATE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.SCHEDULE_DATE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_ID;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_SCHEDULE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Path.PATH_USER;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -59,7 +59,10 @@ public class ScheduleController {
   @PreAuthorize("#id == authentication.principal.id")
   public ResponseEntity<PagedModel<ScheduleResponse>> listNextUserSchedules(
       @PathVariable Long id,
-      @PageableDefault(size = 10, sort = {SCHEDULE_DATE}) Pageable pagination) {
+      @PageableDefault(
+              size = 10,
+              sort = {SCHEDULE_DATE})
+          Pageable pagination) {
     return ResponseEntity.ok(service.listNextUserSchedules(id, pagination));
   }
 
@@ -69,8 +72,9 @@ public class ScheduleController {
   }
 
   @DeleteMapping
-  @PreAuthorize("hasRole('ROLE_ADMIN') "
-      + "or hasRole('ROLE_USER') and #request.userId == authentication.principal.id")
+  @PreAuthorize(
+      "hasRole('ROLE_ADMIN') "
+          + "or hasRole('ROLE_USER') and #request.userId == authentication.principal.id")
   public ResponseEntity<Void> removeSchedule(@Valid @RequestBody ScheduleRemoveRequest request) {
     service.removeSchedule(request);
     return ResponseEntity.noContent().build();

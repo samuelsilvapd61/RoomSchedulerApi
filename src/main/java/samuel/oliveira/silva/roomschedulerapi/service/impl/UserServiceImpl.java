@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
+import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleRequest;
@@ -15,8 +17,8 @@ import samuel.oliveira.silva.roomschedulerapi.domain.response.UserResponse;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.infra.security.SecurityConfiguration;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailDispatcher;
 import samuel.oliveira.silva.roomschedulerapi.repository.UserRepository;
-import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
 
   @Autowired UserRepository repository;
   @Autowired SecurityConfiguration securityConfiguration;
-  @Autowired EmailService emailService;
+  @Autowired EmailDispatcher emailDispatcher;
 
   @Override
   @Transactional
@@ -35,8 +37,8 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
     var email = request.email();
     validateIfUserCanBeAdded(document, email);
     var newUser = addUserInDatabase(request);
+    sendEmailToUser(INCLUDED_USER, request.email());
 
-    emailService.sendEmail(INCLUDED_USER, request.email());
     return new UserResponse(newUser);
   }
 
@@ -80,7 +82,7 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
             },
             new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
 
-    emailService.sendEmail(REMOVED_USER, removedUser.getEmail());
+    sendEmailToUser(REMOVED_USER, removedUser.getEmail());
   }
 
   @Override
@@ -116,5 +118,10 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
 
   private boolean emailAlreadyExists(String email) {
     return repository.existsByEmail(email);
+  }
+
+  private void sendEmailToUser(EmailEvent emailEvent, String email) {
+    var emailRequest = EmailRequest.builder().event(emailEvent).destiny(email).build();
+    emailDispatcher.sendEmailToRabbitMq(emailRequest);
   }
 }

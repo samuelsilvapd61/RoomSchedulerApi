@@ -1,8 +1,8 @@
 package samuel.oliveira.silva.roomschedulerapi.infra.security;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.AUTHENTICATION;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.BEARER;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.EMPTY_STRING;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Authentication.AUTHENTICATION;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Authentication.BEARER;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.EMPTY_STRING;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

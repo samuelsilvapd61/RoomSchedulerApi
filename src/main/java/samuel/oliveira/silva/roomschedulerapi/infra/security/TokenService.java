@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.infra.security;
 
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.APPLICATION_NAME;
-import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.TIME_ZONE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Authentication.TIME_ZONE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Generics.APPLICATION_NAME;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -14,9 +14,7 @@ import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 
-/**
- * This class handles JwtToken.
- */
+/** This class handles JwtToken. */
 @Service
 public class TokenService {
 
