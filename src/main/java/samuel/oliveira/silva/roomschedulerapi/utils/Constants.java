@@ -38,6 +38,7 @@ public class Constants {
   public static class Cache {
     public static final String ROOMS = "rooms";
     public static final String NEXT_ROOM_SCHEDULES = "nextRoomSchedules";
+    public static final String KEY_ID = "#id";
   }
 
   /**
@@ -45,6 +46,8 @@ public class Constants {
    */
   public static class RabbitMq {
     public static final String QUEUE_EMAIL = "room-scheduler.email";
+    public static final String DLQ_SUFIX = "-dlq";
+    public static final String EMAIL_DLX = "email.dlx";
   }
 
   /**

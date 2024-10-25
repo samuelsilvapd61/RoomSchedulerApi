@@ -1,7 +1,13 @@
 package samuel.oliveira.silva.roomschedulerapi.infra.config;
 
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.RabbitMq.DLQ_SUFIX;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.RabbitMq.EMAIL_DLX;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.RabbitMq.QUEUE_EMAIL;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -19,9 +25,35 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
+  private static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
+  private static final String X_DEAD_LETTER_ROUTING_KEY = "x-dead-letter-routing-key";
+
   @Bean
   public Queue createQueue() {
-    return QueueBuilder.durable(QUEUE_EMAIL).build();
+    return QueueBuilder.durable(QUEUE_EMAIL)
+        .withArgument(X_DEAD_LETTER_EXCHANGE, EMAIL_DLX) // Define a DLX
+        .withArgument(X_DEAD_LETTER_ROUTING_KEY, QUEUE_EMAIL + DLQ_SUFIX) // Define a routing key para a DLQ
+        .build();
+  }
+
+  @Bean
+  public Queue createQueueDlq() {
+    return QueueBuilder.durable(QUEUE_EMAIL + DLQ_SUFIX).build();
+  }
+
+  @Bean
+  public DirectExchange deadLetterExchange() {
+    return ExchangeBuilder
+        .directExchange(EMAIL_DLX)
+        .build();
+  }
+
+  @Bean
+  public Binding bindQueueToDlx() {
+    return BindingBuilder
+        .bind(createQueueDlq())
+        .to(deadLetterExchange())
+        .with(QUEUE_EMAIL + DLQ_SUFIX); // Routing key para a DLQ
   }
 
   @Bean

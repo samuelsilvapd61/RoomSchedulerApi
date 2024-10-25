@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -27,6 +28,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /** Interceptor for exceptions. Personalizes and returns clean responses for errors. */
+@Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -94,7 +96,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     var apiError = buildApiError(ApiErrorEnum.INVALID_JSON);
     var status = HttpStatus.valueOf(apiError.getStatus());
-    return handleExceptionInternal(ex, apiError, new HttpHeaders(), status, request);
+    return handleExceptionInternal(ex, apiError, headers, status, request);
   }
 
   @Override
@@ -113,7 +115,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             .map(ApiErrorEnum::valueOfOrNull)
             .map(ApiExceptionHandler::buildApiError)
             .orElseGet(() -> buildApiError(ApiErrorEnum.INVALID_FIELD));
-    return ResponseEntity.badRequest().body(apiError);
+    return handleExceptionInternal(ex, apiError, headers, status, request);
+  }
+
+  /**
+   * This method exists to be called by the handlers.
+   * It logs the exception before returns the response.
+   */
+  private ResponseEntity<Object> handleExceptionInternal(
+      Exception ex,
+      ApiErrorDto apiError,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+    log.warn("Error caught: {}", ex.getMessage());
+    return super.handleExceptionInternal(ex, apiError, headers, status, request);
   }
 
   private ObjectError fetchObjectError(MethodArgumentNotValidException ex) {

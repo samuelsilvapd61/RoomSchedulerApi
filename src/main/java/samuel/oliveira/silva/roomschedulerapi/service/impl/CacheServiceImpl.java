@@ -1,6 +1,7 @@
-package samuel.oliveira.silva.roomschedulerapi.service;
+package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
 
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.KEY_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.NEXT_ROOM_SCHEDULES;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.ROOMS;
 
@@ -60,7 +61,7 @@ public class CacheServiceImpl {
    * @param date date
    * @return the response that would be returned by the database
    */
-  @CachePut(value = NEXT_ROOM_SCHEDULES, key = "#id")
+  @CachePut(value = NEXT_ROOM_SCHEDULES, key = KEY_ID)
   public RoomSchedulesResponse updateNextRoomSchedules(Long id, LocalDate date) {
     var dates = scheduleRepository.findNextSchedulesByRoomId(id, date);
     var localDates = dates.stream().map(Date::toLocalDate).toList();

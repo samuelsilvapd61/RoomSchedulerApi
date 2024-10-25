@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleRemoveRequest;
 
 /**
  * This class represents the primary key of the Schedule. This is a double primary key.
  */
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

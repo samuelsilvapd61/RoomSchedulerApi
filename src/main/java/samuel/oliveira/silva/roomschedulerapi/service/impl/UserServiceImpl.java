@@ -3,6 +3,7 @@ package samuel.oliveira.silva.roomschedulerapi.service.impl;
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.INCLUDED_USER;
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_USER;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -23,6 +24,7 @@ import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 
 /** Business and logical actions of user. */
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService, EntityActionExecutor {
 
@@ -66,6 +68,7 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
               return repository.save(user);
             },
             new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
+    log.info("User '{}' now has the role '{}'.", newUser.getEmail(), newUser.getRole());
     return new UserResponse(newUser);
   }
 
@@ -82,6 +85,7 @@ public class UserServiceImpl implements UserService, EntityActionExecutor {
             },
             new ApiException(ApiErrorEnum.USER_DOESNT_EXIST));
 
+    log.info("User '{}' was removed.", removedUser.getEmail());
     sendEmailToUser(REMOVED_USER, removedUser.getEmail());
   }
 

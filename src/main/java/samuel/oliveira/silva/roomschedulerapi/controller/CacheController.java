@@ -10,7 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
+import samuel.oliveira.silva.roomschedulerapi.service.impl.CacheServiceImpl;
 
 /** Controller to Cache. */
 @RestController

@@ -1,11 +1,13 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
 import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_SCHEDULE;
+import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.KEY_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.NEXT_ROOM_SCHEDULES;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -23,22 +25,19 @@ import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiErrorEnum;
 import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.messaging.EmailDispatcher;
 import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
-import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 import samuel.oliveira.silva.roomschedulerapi.service.ScheduleService;
 import samuel.oliveira.silva.roomschedulerapi.service.UserService;
 
 /** Business and logical actions of schedule. */
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService, EntityActionExecutor {
 
   @Autowired ScheduleRepository scheduleRepository;
-
   @Autowired UserService userService;
-
   @Autowired RoomService roomService;
-
   @Autowired CacheServiceImpl cacheService;
   @Autowired EmailDispatcher emailDispatcher;
 
@@ -66,7 +65,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
   }
 
   @Override
-  @Cacheable(value = NEXT_ROOM_SCHEDULES, key = "#id")
+  @Cacheable(value = NEXT_ROOM_SCHEDULES, key = KEY_ID)
   public RoomSchedulesResponse listNextRoomSchedules(Long id) {
     roomService.roomExistsOrThrowException(id);
     List<Date> dates = scheduleRepository.findNextSchedulesByRoomId(id, LocalDate.now());
@@ -90,6 +89,7 @@ public class ScheduleServiceImpl implements ScheduleService, EntityActionExecuto
       emailDispatcher.sendEmailToRabbitMq(
           EmailRequest.builder().event(REMOVED_SCHEDULE).destiny(user.getEmail()).build());
       cacheService.updateNextRoomSchedules(scheduleId.getRoom(), LocalDate.now());
+      log.info("Schedule {} of user '{}' was removed.", scheduleId, user.getEmail());
     } else {
       throw new ApiException(ApiErrorEnum.SCHEDULE_DOESNT_EXIST);
     }

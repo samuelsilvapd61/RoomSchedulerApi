@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
 import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 
-/**
- * Class to send email to the user.
- */
+/** Class to send email to the user. */
 @Service
 public class EmailServiceImpl implements EmailService {
 

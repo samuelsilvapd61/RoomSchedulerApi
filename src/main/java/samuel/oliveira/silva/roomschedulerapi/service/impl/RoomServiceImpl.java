@@ -6,6 +6,7 @@ import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.ROOMS
 
 import java.time.LocalDate;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,11 @@ import samuel.oliveira.silva.roomschedulerapi.infra.exception.ApiException;
 import samuel.oliveira.silva.roomschedulerapi.messaging.EmailDispatcher;
 import samuel.oliveira.silva.roomschedulerapi.repository.RoomRepository;
 import samuel.oliveira.silva.roomschedulerapi.repository.ScheduleRepository;
-import samuel.oliveira.silva.roomschedulerapi.service.CacheServiceImpl;
 import samuel.oliveira.silva.roomschedulerapi.service.EntityActionExecutor;
 import samuel.oliveira.silva.roomschedulerapi.service.RoomService;
 
 /** Business and logical actions of room. */
+@Slf4j
 @Service
 public class RoomServiceImpl implements RoomService, EntityActionExecutor {
 
@@ -40,6 +41,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
     var room = new Room(request);
     var newRoom = repository.save(room);
     cacheService.updateRoomsCache();
+    log.info("Room id '{}' name '{}' created.", newRoom.getId(), newRoom.getName());
     return new RoomResponse(newRoom);
   }
 
@@ -64,12 +66,16 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
             request.id(),
             repository,
             room -> {
+              log.info(
+                  "Room id '{}' had the name '{}' updated to '{}'.",
+                  room.getId(), room.getName(), request.name());
               room.updateRoom(request);
               return repository.save(room);
             },
             new ApiException(ApiErrorEnum.ROOM_DOESNT_EXIST));
     cacheService.updateRoomsCache();
     sendEmailToAffectedUsers(request.id(), UPDATED_ROOM);
+
     return new RoomResponse(newRoom);
   }
 
@@ -80,6 +86,7 @@ public class RoomServiceImpl implements RoomService, EntityActionExecutor {
         id,
         repository,
         room -> {
+          log.info("Room id '{}' name '{}' was removed.", room.getId(), room.getName());
           sendEmailToAffectedUsers(room.getId(), REMOVED_ROOM);
           repository.deleteById(room.getId());
           return null;
