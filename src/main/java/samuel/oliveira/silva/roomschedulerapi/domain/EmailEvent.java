@@ -19,7 +19,7 @@ public enum EmailEvent {
           + "Be sure to verify your schedules, or schedule again."),
   REMOVED_SCHEDULE(
       "Schedule removal",
-      "Some of your schedules were removed by an ADMIN. "
+      "One of your schedules was removed. If it was not you that do this, it was an ADMIN."
           + "Be sure to verify your schedules, or schedule again.");
 
   private final String title;
