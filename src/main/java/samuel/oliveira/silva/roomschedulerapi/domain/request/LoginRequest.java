@@ -1,5 +1,6 @@
 package samuel.oliveira.silva.roomschedulerapi.domain.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -8,4 +9,4 @@ import jakarta.validation.constraints.NotBlank;
  * @param email email
  * @param password password
  */
-public record LoginRequest(@NotBlank String email, @NotBlank String password) {}
+public record LoginRequest(@Email @NotBlank String email, @NotBlank String password) {}
