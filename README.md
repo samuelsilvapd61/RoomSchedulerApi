@@ -8,9 +8,9 @@ The problem is that many people try to use the same rooms at the same time.
 The company needs a solution to prevent these occurrences, some way to provide the employees the possibility to reserve a room for a specific day.
 The company wants a software able to manage the schedules, preventing its employees to schedule the same room at the same day. That way, the employees can plan better their meetings or general activities.
 
-Thinking about that, RoomScheduleApi is a software created to manage schedules of rooms.
+Thinking about that, RoomSchedulerApi is a software created to manage schedules of rooms.
 The user can log in, list the existing rooms, see their available dates, and make reservations.
-Moreover, there will be admin users, that have some extra powers. In addiction, when some specific events occur, users receive emails to be informed.
+Moreover, there will be admin users, that have some extra powers. In addition, when some specific events occur, users receive emails to be informed.
 
 ---
 
