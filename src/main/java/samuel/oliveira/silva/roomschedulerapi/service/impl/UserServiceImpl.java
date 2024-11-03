@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
-import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.INCLUDED_USER;
-import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_USER;
+import static samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent.INCLUDED_USER;
+import static samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent.REMOVED_USER;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.UserUpdateRoleRequest;

@@ -2,7 +2,7 @@
 
 ## History behind the project
 
-A fictitious company have many rooms in its buildings, for different objectives. There are meeting rooms, chatting rooms, and other types of rooms. 
+A fictitious company has many rooms in its buildings, for different objectives. There are meeting rooms, chatting rooms, and other types of rooms. 
 The problem is that many people try to use the same rooms at the same time.
 
 The company needs a solution to prevent these occurrences, some way to provide the employees the possibility to reserve a room for a specific day.
@@ -59,9 +59,9 @@ See the functionalities below.
 
 Check out my presentations on YouTube.
 
-Using the system with Postman - (link available soon)
+Using the system with Postman - https://www.youtube.com/watch?v=Y0hispjK8vE
 
-Showing/explaining the code - (link available soon)
+Showing the code - https://www.youtube.com/watch?v=_jqM1_2DgTM
 
 ---
 

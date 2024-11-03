@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import samuel.oliveira.silva.roomschedulerapi.controller.AbstractTestController;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.User;
 import samuel.oliveira.silva.roomschedulerapi.domain.User.UserBuilder;
 import samuel.oliveira.silva.roomschedulerapi.domain.UserRole;

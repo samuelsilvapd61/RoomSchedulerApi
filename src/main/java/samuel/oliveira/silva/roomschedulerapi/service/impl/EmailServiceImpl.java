@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent;
 import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 
 /** Class to send email to the user. */

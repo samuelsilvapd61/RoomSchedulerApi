@@ -5,7 +5,7 @@ import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.RabbitMq.QU
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 
 /**
  * Class to send messages to RabbitMQ.

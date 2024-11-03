@@ -31,8 +31,8 @@ public class RabbitMqConfig {
   @Bean
   public Queue createQueue() {
     return QueueBuilder.durable(QUEUE_EMAIL)
-        .withArgument(X_DEAD_LETTER_EXCHANGE, EMAIL_DLX) // Define a DLX
-        .withArgument(X_DEAD_LETTER_ROUTING_KEY, QUEUE_EMAIL + DLQ_SUFIX) // Define a routing key para a DLQ
+        .withArgument(X_DEAD_LETTER_EXCHANGE, EMAIL_DLX)
+        .withArgument(X_DEAD_LETTER_ROUTING_KEY, QUEUE_EMAIL + DLQ_SUFIX)
         .build();
   }
 
@@ -53,7 +53,7 @@ public class RabbitMqConfig {
     return BindingBuilder
         .bind(createQueueDlq())
         .to(deadLetterExchange())
-        .with(QUEUE_EMAIL + DLQ_SUFIX); // Routing key para a DLQ
+        .with(QUEUE_EMAIL + DLQ_SUFIX);
   }
 
   @Bean

@@ -1,6 +1,6 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
-import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_SCHEDULE;
+import static samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent.REMOVED_SCHEDULE;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.KEY_ID;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.NEXT_ROOM_SCHEDULES;
 
@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.Schedule;
 import samuel.oliveira.silva.roomschedulerapi.domain.ScheduleId;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.ScheduleIncludeRequest;

@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.service.EmailService;
 
 /**

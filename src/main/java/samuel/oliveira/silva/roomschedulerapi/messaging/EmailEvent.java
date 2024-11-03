@@ -1,4 +1,4 @@
-package samuel.oliveira.silva.roomschedulerapi.domain;
+package samuel.oliveira.silva.roomschedulerapi.messaging;
 
 import lombok.Getter;
 

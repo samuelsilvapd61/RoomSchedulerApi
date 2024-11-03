@@ -1,7 +1,7 @@
 package samuel.oliveira.silva.roomschedulerapi.service.impl;
 
-import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.REMOVED_ROOM;
-import static samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent.UPDATED_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent.REMOVED_ROOM;
+import static samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent.UPDATED_ROOM;
 import static samuel.oliveira.silva.roomschedulerapi.utils.Constants.Cache.ROOMS;
 
 import java.time.LocalDate;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailEvent;
-import samuel.oliveira.silva.roomschedulerapi.domain.EmailRequest;
+import samuel.oliveira.silva.roomschedulerapi.messaging.EmailEvent;
+import samuel.oliveira.silva.roomschedulerapi.domain.request.EmailRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.Room;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomIncludeRequest;
 import samuel.oliveira.silva.roomschedulerapi.domain.request.RoomUpdateRequest;
