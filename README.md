@@ -63,6 +63,8 @@ Using the system with Postman - https://www.youtube.com/watch?v=Y0hispjK8vE
 
 Showing the code - https://www.youtube.com/watch?v=_jqM1_2DgTM
 
+Slides - [RoomScheduler.pptx](https://github.com/user-attachments/files/17980510/RoomScheduler.pptx)
+
 ---
 
 ## How to install the system
